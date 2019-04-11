@@ -1,0 +1,27 @@
+apiVersion: skaffold/v1beta7
+kind: Config
+build:
+  tagPolicy:
+    envTemplate:
+      template: '{{.DOCKER_REGISTRY}}/livewyer-test/vote:{{.VERSION}}'
+  artifacts:
+  - image: livewyer-test/vote
+  local: {}
+deploy:
+  kubectl: {}
+profiles:
+- name: dev
+  build:
+    artifacts:
+    - image: harbor.demo.training.livew.io/livewyer-test/vote
+    tagPolicy:
+      sha256: {}
+    local: {}
+  deploy:
+    helm:
+      releases:
+      - name: vote
+        chartPath: charts/vote
+        skipBuildDependencies: true # Skip helm dep build
+        setValueTemplates:
+          imageName: 'harbor.demo.training.livew.io/livewyer-test/vote@sha256:{{.DIGEST_HEX}}'
