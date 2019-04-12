@@ -4,20 +4,12 @@ metadata:
   name: {{ template "fullname" . }}
   labels:
     app: {{ template "fullname" . }}
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
-    release: {{ .Release.Name  | quote }}
-    heritage: {{ .Release.Service  | quote }}
-    version: {{ .Values.image.tag | quote }}
 spec:
   replicas: {{ .Values.replicaCount }}
   template:
     metadata:
       labels:
         app: {{ template "fullname" . }}
-        chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
-        release: {{ .Release.Name  | quote }}
-        heritage: {{ .Release.Service  | quote }}
-        version: {{ .Values.imageTag | quote }}
     spec:
       containers:
         - name: vote
