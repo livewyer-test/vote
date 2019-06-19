@@ -46,6 +46,7 @@ pipeline {
           sh "jx get preview --current"            
           sh "jx get preview --current > .CURRENT_PREVIEW_URL"
           sh "cat .CURRENT_PREVIEW_URL"
+          sh "sleep 60000"
           sh "pip install behave"
           sh "behave"
         }
