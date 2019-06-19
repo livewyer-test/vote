@@ -25,8 +25,6 @@ pipeline {
           dir('./charts/preview') {
             sh "make preview"
             sh "jx preview --app $APP_NAME --dir ../.."
-            sh "echo $JOB_NAME"
-            sh "sleep 60000"
             sh "jx get preview --current"            
             sh "jx get preview --current > .CURRENT_PREVIEW_URL"
             sh "helm version"
