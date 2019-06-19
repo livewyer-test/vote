@@ -42,7 +42,7 @@ pipeline {
       steps {
         container('python') {
           checkout scm
-          sh "sleep 60000"
+          //sh "sleep 60000"
           sh "jx get preview --current"            
           sh "jx get preview --current > .CURRENT_PREVIEW_URL"
           sh "cat .CURRENT_PREVIEW_URL"
