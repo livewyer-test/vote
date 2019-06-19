@@ -1,6 +1,6 @@
 pipeline {
   agent {
-    label "jenkins-go"
+    label "jenkins-python"
   }
   environment {
     ORG = 'livewyer-test'
@@ -51,21 +51,18 @@ pipeline {
         branch 'master'
       }
       steps {
-        container('go') {
-          dir('/home/jenkins/go/src/github.com/livewyer-test/vote') {
-            checkout scm
+        container('python') {
+          checkout scm
+          // ensure we're not on a detached head
+          sh "git checkout master"
+          sh "git config --global credential.helper store"
+          sh "jx step git credentials"
 
-            // ensure we're not on a detached head
-            sh "git checkout master"
-            sh "git config --global credential.helper store"
-            sh "jx step git credentials"
-
-            // so we can retrieve the version in later steps
-            sh "echo \$(jx-release-version) > VERSION"
-            sh "jx step tag --version \$(cat VERSION)"
-            sh "export VERSION=`cat VERSION` && skaffold build -f skaffold.yaml"
-            sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:\$(cat VERSION)"
-          }
+          // so we can retrieve the version in later steps
+          sh "echo \$(jx-release-version) > VERSION"
+          sh "jx step tag --version \$(cat VERSION)"
+          sh "export VERSION=`cat VERSION` && skaffold build -f skaffold.yaml"
+          sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:\$(cat VERSION)"
         }
       }
     }
@@ -74,16 +71,14 @@ pipeline {
         branch 'master'
       }
       steps {
-        container('go') {
-          dir('/home/jenkins/go/src/github.com/livewyer-test/vote/charts/vote') {
-            sh "jx step changelog --version v\$(cat ../../VERSION)"
+        container('python') {
+          sh "jx step changelog --version v\$(cat ../../VERSION)"
 
-            // release the helm chart
-            sh "jx step helm release"
+          // release the helm chart
+          sh "jx step helm release"
 
-            // promote through all 'Auto' promotion Environments
-            sh "jx promote -b --all-auto --timeout 1h --version \$(cat ../../VERSION)"
-          }
+          // promote through all 'Auto' promotion Environments
+          sh "jx promote -b --all-auto --timeout 1h --version \$(cat ../../VERSION)"
         }
       }
     }
