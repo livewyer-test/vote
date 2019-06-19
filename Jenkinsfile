@@ -25,6 +25,8 @@ pipeline {
           dir('./charts/preview') {
             sh "make preview"
             sh "jx preview --app $APP_NAME --dir ../.."
+            sh "jx get preview --current"            
+            sh "jx get preview --current > .CURRENT_PREVIEW_URL"
             sh "helm version"
           }
         }
@@ -42,7 +44,6 @@ pipeline {
       steps {
         container('python') {
           checkout scm
-          sh "jx get preview --current > .CURRENT_PREVIEW_URL"
           sh "cat .CURRENT_PREVIEW_URL"
           sh "pip install behave"
           sh "behave"
