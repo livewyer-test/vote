@@ -30,7 +30,8 @@ spec:
 {{- end }}
         ports:
         - containerPort: {{ .Values.service.internalPort }}
-         resources:
+        resources:
 {{ toYaml .Values.resources | indent 12 }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
 {{- end }}
+
