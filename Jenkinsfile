@@ -42,7 +42,10 @@ pipeline {
       steps {
         container('python') {
           checkout scm
+          sh "jx get preview --current > .CURRENT_PREVIEW_URL"
+          sh "cat .CURRENT_PREVIEW_URL"
           sh "pip install behave"
+          sh "behave"
         }
       }
     }
