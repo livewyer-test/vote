@@ -27,6 +27,7 @@ pipeline {
           dir('/home/jenkins/go/src/github.com/livewyer-test/vote/charts/preview') {
             sh "make preview"
             sh "jx preview --app $APP_NAME --dir ../.."
+            sh "helm version"
           }
         }
       }

@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: vote
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ if .Values.imageName }}{{ .Values.imageName }}{{ else }}"{{ .Values.image.repository }}:{{ .Values.image.tag }}"{{ end }}
           imagePullPolicy: {{default "Always" .Values.image.pullPolicy}}
           ports:
             - containerPort: 80
