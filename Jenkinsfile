@@ -18,17 +18,31 @@ pipeline {
         HELM_RELEASE = "$PREVIEW_NAMESPACE".toLowerCase()
       }
       steps {
-        container('go') {
-          dir('/home/jenkins/go/src/github.com/livewyer-test/vote') {
-            checkout scm
-            sh "export VERSION=$PREVIEW_VERSION && skaffold build -f skaffold.yaml"
-            sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:$PREVIEW_VERSION"
-          }
-          dir('/home/jenkins/go/src/github.com/livewyer-test/vote/charts/preview') {
+        container('python') {
+          checkout scm
+          sh "export VERSION=$PREVIEW_VERSION && skaffold build -f skaffold.yaml"
+          sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:$PREVIEW_VERSION"
+          dir('./charts/preview') {
             sh "make preview"
             sh "jx preview --app $APP_NAME --dir ../.."
             sh "helm version"
           }
+        }
+      }
+    }
+    stage('BDD Test') {
+      when {
+        branch 'PR-*'
+      }
+      environment {
+        PREVIEW_VERSION = "0.0.0-SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER"
+        PREVIEW_NAMESPACE = "$APP_NAME-$BRANCH_NAME".toLowerCase()
+        HELM_RELEASE = "$PREVIEW_NAMESPACE".toLowerCase()
+      }
+      steps {
+        container('python') {
+          checkout scm
+          sh "pip install behave"
         }
       }
     }
