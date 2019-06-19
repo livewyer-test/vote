@@ -42,14 +42,6 @@ pipeline {
       steps {
         container('python') {
           checkout scm
-<<<<<<< HEAD
-=======
-          //sh "sleep 60000"
-          sh "jx get preview --current"            
-          sh "jx get preview --current > .CURRENT_PREVIEW_URL"
-          sh "cat .CURRENT_PREVIEW_URL"
-          sh "sleep 60000"
->>>>>>> 4882766744b27286ce8251bdcdfd3ce9df967dfb
           sh "pip install behave"
           sh "behave"
         }
